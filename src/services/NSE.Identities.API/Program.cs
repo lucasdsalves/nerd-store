@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NSE.Identities.API.Data;
-using NSE.Identities.API.Extensions;
+using NSE.WebAPI.Core.Identities;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,30 +18,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultTokenProviders();
 
 #region JWT
-var appSettingsSection = builder.Configuration.GetSection("AppSettings");
-builder.Services.Configure<AppSettings>(appSettingsSection);
-
-var appSettings = appSettingsSection.Get<AppSettings>();
-var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(bearerOptions =>
-{
-    bearerOptions.RequireHttpsMetadata = true;
-    bearerOptions.SaveToken = true;
-    bearerOptions.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = appSettings.ValidIn,
-        ValidIssuer = appSettings.Issuer
-    };
-});
+builder.Services.AddJwtConfiguration(builder);
 #endregion
 
 builder.Services.AddControllers();

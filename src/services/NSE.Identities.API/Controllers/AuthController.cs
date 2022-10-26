@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using NSE.Identities.API.Extensions;
 using NSE.Identities.API.Models;
+using NSE.WebAPI.Core.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -33,7 +32,8 @@ namespace NSE.Identities.API.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var user = new IdentityUser { 
+            var user = new IdentityUser
+            {
                 UserName = userRegister.Email,
                 Email = userRegister.Email,
                 EmailConfirmed = true
@@ -92,7 +92,7 @@ namespace NSE.Identities.API.Controllers
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
-            
+
             foreach (var userRole in userRoles)
             {
                 claims.Add(new Claim("role", userRole));
@@ -136,6 +136,6 @@ namespace NSE.Identities.API.Controllers
         }
 
         private static long ToUnixEpochDate(DateTime date)
-            => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970,1,1,0,0,0,TimeSpan.Zero)).TotalSeconds);
+            => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
     }
 }
