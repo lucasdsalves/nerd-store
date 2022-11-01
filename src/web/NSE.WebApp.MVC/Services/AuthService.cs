@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace NSE.WebApp.MVC.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : ErrorsService, IAuthService
     {
         private readonly HttpClient _httpClient;
 
@@ -21,6 +21,14 @@ namespace NSE.WebApp.MVC.Services
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
+            if (!DealWithResponseErrors(response))
+            {
+                return new UserResponseLogin
+                {
+                    ResponseResult = JsonSerializer.Deserialize<ResponseResult>(await response.Content.ReadAsStringAsync(), options)
+                };
+            }
+
             return JsonSerializer.Deserialize<UserResponseLogin>(await response.Content.ReadAsStringAsync(), options);
         }
 
@@ -31,6 +39,14 @@ namespace NSE.WebApp.MVC.Services
             var response = await _httpClient.PostAsync("https://localhost:7269/register", registerContent);
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            if (!DealWithResponseErrors(response))
+            {
+                return new UserResponseLogin
+                {
+                    ResponseResult = JsonSerializer.Deserialize<ResponseResult>(await response.Content.ReadAsStringAsync(), options)
+                };
+            }
 
             return JsonSerializer.Deserialize<UserResponseLogin>(await response.Content.ReadAsStringAsync(), options);
         }
