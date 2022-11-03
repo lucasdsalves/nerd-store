@@ -12,8 +12,9 @@ namespace NSE.WebApp.MVC.Controllers
             _catalogService = catalogService;
         }
 
-        [HttpGet("")]
-        [HttpGet("showcase")]
+        [HttpGet]
+        [Route("")]
+        [Route("showcase")]
         public async Task<IActionResult> Index()
         {
             var products = await _catalogService.GetAll();

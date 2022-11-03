@@ -37,8 +37,7 @@ namespace NSE.WebApp.MVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpGet]
-        [Route("login")]
+        [HttpGet("login")]
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
