@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using NSE.WebApp.MVC.Extensions;
 using NSE.WebApp.MVC.Services;
 using NSE.WebApp.MVC.Services.Handlers;
+using Polly;
+using Polly.Extensions.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,23 +16,50 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 });
 #endregion
 
+#region RETRY-POLICY
+var retryWaitPolicy = HttpPolicyExtensions
+                        .HandleTransientHttpError()
+                        .WaitAndRetryAsync(new[]
+                        {
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(5),
+                            TimeSpan.FromSeconds(10),
+                        }, (outcome, timespan, retryCount, context) =>
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.WriteLine($"Trying for the {retryCount} time.");
+                            Console.ForegroundColor= ConsoleColor.DarkGray;
+                        });
+#endregion
+
+#region SERVICES
 builder.Services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
+
 builder.Services.AddHttpClient<IAuthService, AuthService>();
-//builder.Services.AddHttpClient<ICatalogService, CatalogService>()
-//                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+
+builder.Services.AddHttpClient<ICatalogService, CatalogService>()
+                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>() // TOKEN HTTP
+                /*.AddTransientHttpErrorPolicy(p => p.WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(600));*/ // POLLY EXAMPLE 1
+                .AddPolicyHandler(retryWaitPolicy); // POLLY EXAMPLE 2
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddScoped<IUser, AspNetUser>();
 
 #region REFIT
-builder.Services.AddHttpClient("Refit", options =>
-{
-    options.BaseAddress = new Uri(builder.Configuration.GetSection("AppSettings").Get<AppSettings>().CatalogApiUrl);
-})
-                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
-                .AddTypedClient(Refit.RestService.For<ICatalogServiceRefit>);
+//builder.Services.AddHttpClient("Refit", options =>
+//{
+//    options.BaseAddress = new Uri(builder.Configuration.GetSection("AppSettings").Get<AppSettings>().CatalogApiUrl);
+//})
+//                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
+//                .AddTypedClient(Refit.RestService.For<ICatalogServiceRefit>);
 #endregion
 
+#endregion
+
+#region APPSETTINGS
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+#endregion
 
 builder.Services.AddControllersWithViews();
 
