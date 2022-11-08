@@ -14,7 +14,7 @@ namespace NSE.Client.API.Models
         public Guid ClientId { get; private set; }
 
         // EF Relation
-        public Client Client { get; protected set; }
+        public Clients Client { get; protected set; }
 
         public Address(string street, string number, string complement,
             string neighborhood, string zipCode, string city, string state)

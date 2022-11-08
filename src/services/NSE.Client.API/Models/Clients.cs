@@ -2,7 +2,7 @@
 
 namespace NSE.Client.API.Models
 {
-    public class Client : Entity, IAggregateRoot
+    public class Clients : Entity, IAggregateRoot
     {
         public string Name { get; private set; }
         public Email Email { get; private set; }
@@ -11,9 +11,9 @@ namespace NSE.Client.API.Models
         public Address Address { get; private set; }
 
         // EF Relation
-        protected Client() { }
+        protected Clients() { }
 
-        public Client(Guid id, string name, string email, string cpf)
+        public Clients(Guid id, string name, string email, string cpf)
         {
             Id = id;
             Name = name;

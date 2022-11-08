@@ -7,8 +7,10 @@ using NSE.WebAPI.Core.Identities;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region DB-CONTEXT
 builder.Services.AddDbContext<CatalogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+#endregion
 
 #region JWT
 builder.Services.AddJwtConfiguration(builder);
