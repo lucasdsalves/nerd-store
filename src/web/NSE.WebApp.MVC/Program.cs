@@ -40,7 +40,8 @@ builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<ICatalogService, CatalogService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>() // TOKEN HTTP
                 /*.AddTransientHttpErrorPolicy(p => p.WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(600));*/ // POLLY EXAMPLE 1
-                .AddPolicyHandler(retryWaitPolicy); // POLLY EXAMPLE 2
+                .AddPolicyHandler(retryWaitPolicy) // POLLY EXAMPLE 2
+                .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30))); // CIRCUIT BREAKER
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
