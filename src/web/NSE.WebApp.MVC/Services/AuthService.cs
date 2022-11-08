@@ -20,7 +20,7 @@ namespace NSE.WebApp.MVC.Services
         {
             var loginContent = GetContent(userLogin);
 
-            var response = await _httpClient.PostAsync("/login", loginContent);
+            var response = await _httpClient.PostAsync("/api/auth/login", loginContent);
 
             if (!DealWithResponseErrors(response))
             {
@@ -37,7 +37,7 @@ namespace NSE.WebApp.MVC.Services
         {
             var registerContent = GetContent(userRegister);
 
-            var response = await _httpClient.PostAsync("/register", registerContent);
+            var response = await _httpClient.PostAsync("/api/auth/register", registerContent);
 
             if (!DealWithResponseErrors(response))
             {

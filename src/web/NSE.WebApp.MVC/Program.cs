@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using NSE.WebApp.MVC.Extensions;
 using NSE.WebApp.MVC.Services;
+using NSE.WebApp.MVC.Services.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +14,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 });
 #endregion
 
+builder.Services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
-builder.Services.AddHttpClient<ICatalogService, CatalogService>();
+//builder.Services.AddHttpClient<ICatalogService, CatalogService>()
+//                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUser, AspNetUser>();
+
+#region REFIT
+builder.Services.AddHttpClient("Refit", options =>
+{
+    options.BaseAddress = new Uri(builder.Configuration.GetSection("AppSettings").Get<AppSettings>().CatalogApiUrl);
+})
+                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
+                .AddTypedClient(Refit.RestService.For<ICatalogServiceRefit>);
+#endregion
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 

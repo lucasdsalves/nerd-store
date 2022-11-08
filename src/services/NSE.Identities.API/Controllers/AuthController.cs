@@ -12,6 +12,7 @@ using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredCla
 
 namespace NSE.Identities.API.Controllers
 {
+    [Route("api/[controller]")]
     public class AuthController : BaseController
     {
         private readonly SignInManager<IdentityUser> _signInManager;
