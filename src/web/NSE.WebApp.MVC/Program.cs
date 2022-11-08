@@ -4,6 +4,7 @@ using NSE.WebApp.MVC.Services;
 using NSE.WebApp.MVC.Services.Handlers;
 using Polly;
 using Polly.Extensions.Http;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,16 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+#region CULTURE
+var supporterCultures = new[] { new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US"),
+    SupportedCultures = supporterCultures,
+    SupportedUICultures = supporterCultures
+});
+#endregion
 
 #region MIDDLEWARES
 app.UseMiddleware<ExceptionMiddleware>();
