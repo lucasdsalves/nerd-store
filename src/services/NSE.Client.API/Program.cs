@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NSE.Client.API.Application.Commands;
 using NSE.Client.API.Data;
 using NSE.Client.API.Data.Repository;
+using NSE.Client.API.Events;
 using NSE.Client.API.Models;
 using NSE.Core.Mediator;
 
@@ -18,6 +19,7 @@ builder.Services.AddScoped<IClientsRepository, ClientsRepository>();
 builder.Services.AddScoped<ClientsContext>();
 builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
 builder.Services.AddScoped<IRequestHandler<RegisterClientCommand, ValidationResult>, ClientCommandHandler>();
+builder.Services.AddScoped<INotificationHandler<RegisteredClientEvent>, ClientEventHandler>();
 
 builder.Services.AddControllers();
 
