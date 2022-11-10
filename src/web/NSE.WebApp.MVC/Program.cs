@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using NSE.WebApp.MVC.Extensions;
 using NSE.WebApp.MVC.Services;
 using NSE.WebApp.MVC.Services.Handlers;
@@ -34,6 +35,8 @@ var retryWaitPolicy = HttpPolicyExtensions
 #endregion
 
 #region SERVICES
+builder.Services.AddSingleton<IValidationAttributeAdapterProvider, CpfValidationAttributeAdapterProvider>();
+
 builder.Services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
 
 builder.Services.AddHttpClient<IAuthService, AuthService>();

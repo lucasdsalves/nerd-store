@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation.Results;
+using Microsoft.EntityFrameworkCore;
 using NSE.Client.API.Models;
 using NSE.Core.Data;
 using NSE.Core.DomainObjects;
 using NSE.Core.Mediator;
+using NSE.Core.Messages;
 
 namespace NSE.Client.API.Data
 {
@@ -22,6 +24,9 @@ namespace NSE.Client.API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<ValidationResult>();
+            modelBuilder.Ignore<Event>();
+
             // WHERE THERE'S RELATIONSHIP, TURNOFF CASCATE DELETE
             foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                 .SelectMany(e => e.GetForeignKeys())) relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;

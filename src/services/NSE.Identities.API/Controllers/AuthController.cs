@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSE.Identities.API.Models;
+using NSE.WebAPI.Core.Controllers;
 using NSE.WebAPI.Core.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.IdentityModel.Tokens.Jwt;

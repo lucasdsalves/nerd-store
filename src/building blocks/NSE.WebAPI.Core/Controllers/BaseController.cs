@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace NSE.Identities.API.Controllers
+namespace NSE.WebAPI.Core.Controllers
 {
     [ApiController]
     public abstract class BaseController : Controller
     {
         protected ICollection<string> Errors = new List<string>();
-        
+
         protected IActionResult CustomResponse(object result = null)
         {
             if (IsOperationValid())
@@ -27,6 +27,16 @@ namespace NSE.Identities.API.Controllers
             var errors = modelState.Values.SelectMany(e => e.Errors);
 
             foreach (var error in errors)
+            {
+                AddProcessingError(error.ErrorMessage);
+            }
+
+            return CustomResponse();
+        }
+
+        protected IActionResult CustomResponse(ValidationResult validationResult)
+        {
+            foreach (var error in validationResult.Errors)
             {
                 AddProcessingError(error.ErrorMessage);
             }

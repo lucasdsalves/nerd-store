@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSE.Catalog.API.Models;
+using NSE.WebAPI.Core.Controllers;
 using Swashbuckle.AspNetCore.Annotations;
 using static NSE.WebAPI.Core.Identities.CustomAuthorization;
 
 namespace NSE.Catalog.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
-    public class CatalogController : Controller
+    public class CatalogController : BaseController
     {
         private readonly IProductRepository _productRepository;
 
