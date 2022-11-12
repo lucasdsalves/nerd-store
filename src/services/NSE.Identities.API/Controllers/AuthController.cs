@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using EasyNetQ;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NSE.Core.Messages.Integration;
 using NSE.Identities.API.Models;
 using NSE.WebAPI.Core.Controllers;
 using NSE.WebAPI.Core.Extensions;
@@ -19,6 +21,7 @@ namespace NSE.Identities.API.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly AppSettings _appSettings;
+        private IBus _bus;
 
         public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
             IOptions<AppSettings> appSettings)
@@ -43,7 +46,12 @@ namespace NSE.Identities.API.Controllers
 
             var result = await _userManager.CreateAsync(user, userRegister.Password);
 
-            if (result.Succeeded) return CustomResponse(await GenerateJwt(userRegister.Email));
+            if (result.Succeeded)
+            {
+                var IsSucessfullySentToQueue = await RegisterClientIntegrationEvent(userRegister); //Send to RabbitMQ
+
+                return CustomResponse(await GenerateJwt(userRegister.Email));
+            }
 
             foreach (var error in result.Errors)
             {
@@ -139,5 +147,20 @@ namespace NSE.Identities.API.Controllers
 
         private static long ToUnixEpochDate(DateTime date)
             => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
+
+        #region IntegrationEvent_RabbitMQ
+        private async Task<ResponseMessage> RegisterClientIntegrationEvent(UserRegister userRegister)
+        {
+            var user = await _userManager.FindByEmailAsync(userRegister.Email);
+
+            var registeredUser = new RegisteredUserIntegrationEvent(Guid.Parse(user.Id), userRegister.Fullname, userRegister.Email, userRegister.Cpf);
+
+            _bus = RabbitHutch.CreateBus("host=localhost:5672"); //RabbitMQ port
+
+            var result = await _bus.Rpc.RequestAsync<RegisteredUserIntegrationEvent, ResponseMessage>(registeredUser);
+
+            return result;
+        }
+        #endregion
     }
 }

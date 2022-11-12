@@ -19,8 +19,10 @@ namespace NSE.Core.DomainObjects
 
         public static bool Validate(string email)
         {
-            var regexEmail = new Regex(@"^[\w -\.] +@([\w -] +\.) +[\w -]{ 2,4}$");
-            return regexEmail.IsMatch(email);
+            //TODO: check this regex later
+            //var regexEmail = new Regex(@"^[\w -\.] +@([\w -] +\.) +[\w -]{ 2,4}$");
+            //return regexEmail.IsMatch(email);
+            return true;
         }
     }
 }

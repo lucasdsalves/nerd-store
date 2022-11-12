@@ -7,6 +7,7 @@ using NSE.Client.API.Data;
 using NSE.Client.API.Data.Repository;
 using NSE.Client.API.Events;
 using NSE.Client.API.Models;
+using NSE.Client.API.Services.Integration;
 using NSE.Core.Mediator;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddScoped<ClientsContext>();
 builder.Services.AddScoped<IMediatorHandler, MediatorHandler>();
 builder.Services.AddScoped<IRequestHandler<RegisterClientCommand, ValidationResult>, ClientCommandHandler>();
 builder.Services.AddScoped<INotificationHandler<RegisteredClientEvent>, ClientEventHandler>();
+builder.Services.AddHostedService<RegisteredClientIntegrationHandler>(); //Singleton
 #endregion
 
 builder.Services.AddControllers();

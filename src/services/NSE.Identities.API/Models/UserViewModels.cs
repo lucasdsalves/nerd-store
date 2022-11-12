@@ -1,9 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NSE.Identities.API.Models
 {
     public class UserRegister
     {
+        [Required(ErrorMessage = "This field {0} is required")]
+        public string Fullname { get; set; }
+
+        [Required(ErrorMessage = "This field {0} is required")]
+        public string Cpf { get; set; }
+
         [Required(ErrorMessage = "This field {0} is required")]
         [EmailAddress(ErrorMessage = "This field {0} has an invalid format")]
         public string Email { get; set; }
